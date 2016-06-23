@@ -5,7 +5,7 @@ interface iparser{
 
 	const TAG 	= '<element>';
 	const DI_TAG = '< >';
-	const DF_TAG = '< />';
+	const DF_TAG = '</ >';
 
 	/**
 	 * Gets the content of website.

@@ -12,8 +12,11 @@ class parser implements iparser{
 	static $_childs		= [];
 	static $_parents	= [];
 	static $_elements	= [];
+	static $_attributes = [];
 	static $_texts		= [];
 	static $_url;
+
+	static $_tag_name	= "";
 
 	/**
 	 * Gets the content of website.
@@ -30,7 +33,8 @@ class parser implements iparser{
 	 * @param      string  $element  The element
 	 */
 	static function getAttributes($element){
-
+		## get the tag name
+		self::$_tag_name = trim(substr(str_replace(explode(" ", self::DI_TAG)[0], "", $element), 0, stripos($element, " ")));
 	}
 
 	/**
@@ -47,9 +51,6 @@ class parser implements iparser{
 		$element_ipos = strrpos(substr(self::$_content, 0, $ipos), explode(" ", self::DI_TAG)[0]);
 		$element_fpos = $element_ipos + ($ipos - $element_ipos);
 
-		## get the tag name
-		$tag_name = trim(substr(substr(self::$_content, $element_ipos, ($ipos - $element_ipos)), 0, (stripos(substr(self::$_content, $element_ipos, $ipos - $element_ipos), " ") - $element_fpos)));
-
 		## get the tag		
 		$tag = trim(substr(self::$_content, $element_ipos, $element_fpos - $element_ipos));
 
@@ -62,13 +63,16 @@ class parser implements iparser{
 	 * @param 		string $element_tag  The element
 	 */
 	static function findTextElement($element_tag){
+		## close tag
+		self::getAttributes($element_tag);
+		$tag_name_close = str_replace(" ", self::$_tag_name, self::DF_TAG);
+
 		## get the position of element
 		$ipos = stripos(self::$_content, $element_tag);
-		
-		utility::dump($ipos);
+		$fpos = stripos(self::$_content, $tag_name_close, $ipos);
 
-		$fpos = $ipos + strlen($text);
-
+		## get the Text inside the element
+		array_push(self::$_texts, str_replace($element_tag, "", str_replace($tag_name_close, "", substr(self::$_content, $ipos, $fpos - $ipos) )));
 	}
 
 	/**
