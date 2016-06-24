@@ -17,6 +17,7 @@ class parser implements iparser{
 	static $_url;
 
 	static $_tag_name	= "";
+	static $_initial;
 
 	/**
 	 * Gets the content of website.
@@ -44,16 +45,20 @@ class parser implements iparser{
 	 */
 	static function findElement($text){
 		## get the position of $text
-		$ipos = stripos(self::$_content, $text);
-		$fpos = $ipos + strlen($text);
+		$ipos = stripos(self::$_content, explode(" ", self::DI_TAG)[1].$text);
+		if($ipos !== false){
+			$fpos = $ipos + strlen($text);
 
-		## get the position of html open tag container for $text
-		$element_ipos = strrpos(substr(self::$_content, 0, $ipos), explode(" ", self::DI_TAG)[0]);
-		$element_fpos = $element_ipos + ($ipos - $element_ipos);
+			## get the position of html open tag container for $text
+			$element_ipos = strrpos(substr(self::$_content, 0, $ipos), explode(" ", self::DI_TAG)[0]);
+			$element_fpos = $element_ipos + ($ipos - $element_ipos);
 
-		## get the tag		
-		$tag = trim(substr(self::$_content, $element_ipos, $element_fpos - $element_ipos));
-
+			## get the tag		
+			$tag = trim(substr(self::$_content, $element_ipos, $element_fpos - $element_ipos));
+		}else{
+			return false;
+		}
+		
 		return $tag;
 	}
 
@@ -69,10 +74,21 @@ class parser implements iparser{
 
 		## get the position of element
 		$ipos = stripos(self::$_content, $element_tag);
-		$fpos = stripos(self::$_content, $tag_name_close, $ipos);
+		if($ipos !== false){
+			$fpos = stripos(self::$_content, $tag_name_close, $ipos);
 
-		## get the Text inside the element
-		array_push(self::$_texts, str_replace($element_tag, "", str_replace($tag_name_close, "", substr(self::$_content, $ipos, $fpos - $ipos) )));
+			## get the Text inside the element
+			$content = substr(self::$_content, $ipos, $fpos - $ipos);
+			$text = str_replace($element_tag, "", str_replace($tag_name_close, "", $content));
+
+			## remove the entire element from body content
+			self::$_content = str_replace($content, "", self::$_content);
+
+			array_push(self::$_texts, $text);
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 	/**
@@ -101,12 +117,19 @@ class parser implements iparser{
 	 */
 	static function parse($url, $data = array()){
 		self::readContent($url);
+		$content = self::$_content;
 		if(is_array($data)){
 			foreach ($data as $key => $value) {
 				array_push(self::$_elements, self::findTextElement(self::findElement($value)));
 			}
 		}else{
-			array_push(self::$_elements, self::findTextElement(self::findElement($data)));
+			$element_tag 	= self::findElement(trim($data));
+			$ciclo 			= 1;
+			while($found = self::findTextElement($element_tag)){
+				array_push(self::$_elements, $found);
+				$ciclo++;
+			}
+			utility::dump(self::$_texts);
 		}
 	}
 
