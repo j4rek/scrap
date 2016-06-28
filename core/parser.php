@@ -78,7 +78,7 @@ class parser implements iparser{
 			$fpos = stripos(self::$_content, $tag_name_close, $ipos);
 
 			## get the Text inside the element
-			$content = substr(self::$_content, $ipos, $fpos - $ipos);
+			$content = substr(self::$_content, $ipos, $fpos - $ipos).$tag_name_close;
 			$text = str_replace($element_tag, "", str_replace($tag_name_close, "", $content));
 
 			## remove the entire element from body content
@@ -114,23 +114,30 @@ class parser implements iparser{
 	 * fill all the data process
 	 *
 	 * @param      string  $url    The website's url
+	 * @param      array  $data    The information you are looking for inside the website
 	 */
 	static function parse($url, $data = array()){
 		self::readContent($url);
 		$content = self::$_content;
 		if(is_array($data)){
 			foreach ($data as $key => $value) {
-				array_push(self::$_elements, self::findTextElement(self::findElement($value)));
+				$element_tag = self::findElement(trim($value));
+				do{
+					$found = self::findTextElement($element_tag);
+				}
+				while($found);
+
+				array_push(self::$_elements, array($_tmp));
 			}
 		}else{
-			$element_tag 	= self::findElement(trim($data));
-			$ciclo 			= 1;
-			while($found = self::findTextElement($element_tag)){
-				array_push(self::$_elements, $found);
-				$ciclo++;
+			$element_tag = self::findElement(trim($data));
+			do{
+				$found = self::findTextElement($element_tag);
 			}
-			utility::dump(self::$_texts);
+			while($found);
 		}
+
+		utility::dump(self::$_texts);
 	}
 
 	/**
