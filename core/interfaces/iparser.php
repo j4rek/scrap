@@ -8,13 +8,6 @@ interface iparser{
 	const DF_TAG = '</ >';
 
 	/**
-	 * Gets the content of website.
-	 *
-	 * @param      string  $url    The website's url
-	 */
-	static function readContent($url);
-
-	/**
 	 * Gets the attributes of the html element.
 	 *
 	 * @param      string  $element  The element
@@ -53,10 +46,9 @@ interface iparser{
 	/**
 	 * fill all the data process
 	 *
-	 * @param      string  $url    The website's url
 	 * @param      array  $data    The information you are looking for inside the website
 	 */
-	static function parse($url, $data = array());
+	static function parse($data = array());
 
 	/**
 	 * display the resumen of process
@@ -65,10 +57,4 @@ interface iparser{
 	 */
 	static function resumen($url);
 
-	/**
-	 * split the website's url
-	 *
-	 * @param     string  $url    The website's url
-	 */
-	static function splitUrl($url);
 }

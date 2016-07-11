@@ -6,27 +6,15 @@ use core\traits\utility;
 use core\http;
 
 class parser implements iparser{
-	use utility;
-
 	static $_content;
 	static $_childs		= [];
 	static $_parents	= [];
 	static $_elements	= [];
 	static $_attributes = [];
 	static $_texts		= [];
-	static $_url;
 
 	static $_tag_name	= "";
 	static $_initial;
-
-	/**
-	 * Gets the content of website.
-	 *
-	 * @param      string  $url    The website's url
-	 */
-	static function readContent($url){
-		self::$_content = http::getPage($url);
-	}
 
 	/**
 	 * Gets the attributes of the html element.
@@ -113,12 +101,10 @@ class parser implements iparser{
 	/**
 	 * fill all the data process
 	 *
-	 * @param      string  $url    The website's url
 	 * @param      array  $data    The information you are looking for inside the website
 	 */
-	static function parse($url, $data = array()){
-		self::readContent($url);
-		$content = self::$_content;
+	static function parse($data = array()){
+		$content = self::$_content = http::getPage();
 		if(is_array($data)){
 			foreach ($data as $key => $value) {
 				$element_tag = self::findElement(trim($value));
@@ -136,8 +122,7 @@ class parser implements iparser{
 			}
 			while($found);
 		}
-
-		utility::dump(self::$_texts);
+		
 	}
 
 	/**
@@ -146,15 +131,6 @@ class parser implements iparser{
 	 * @param      string  $url    The website's url
 	 */
 	static function resumen($url){
-
-	}
-
-	/**
-	 * split the website's url
-	 *
-	 * @param     string  $url    The website's url
-	 */
-	static function splitUrl($url){
 
 	}
 }
