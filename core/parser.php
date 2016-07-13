@@ -7,6 +7,7 @@ use core\http;
 
 class parser implements iparser{
 	static $_content;
+	static $_tag;
 	static $_childs		= [];
 	static $_parents	= [];
 	static $_elements	= [];
@@ -97,6 +98,31 @@ class parser implements iparser{
 	static function findChilds($element){
 
 	}
+	
+	/**
+	 * scrap function.
+	 * 
+	 * @param 		Array $data  The elements you want to scrap
+	 * @return void
+	 */
+	static function scrap($data = array()){
+		// parse the website many times as you set the number of pages
+		for($i = 1; $i <= http::$_pages_to_scrap; $i++){
+			
+			// analize url
+			http::analizeUrl();
+			
+			http::$_url = str_replace(http::$_ipage . "=" . http::$_pagenumber, http::$_ipage . "=" . $i , http::$_url);
+			
+			// Get the body from website
+			$content = self::$_content = http::getPage();
+			
+			
+			// parse the body of website
+			self::parse($data);	
+		}
+		
+	}
 
 	/**
 	 * fill all the data process
@@ -104,21 +130,22 @@ class parser implements iparser{
 	 * @param      array  $data    The information you are looking for inside the website
 	 */
 	static function parse($data = array()){
-		$content = self::$_content = http::getPage();
 		if(is_array($data)){
 			foreach ($data as $key => $value) {
-				$element_tag = self::findElement(trim($value));
+				if(is_null(self::$_tag) === true){
+					self::$_tag = self::findElement(trim($value));
+				}
 				do{
-					$found = self::findTextElement($element_tag);
+					$found = self::findTextElement(self::$_tag);
 				}
 				while($found);
-
-				array_push(self::$_elements, array($_tmp));
 			}
 		}else{
-			$element_tag = self::findElement(trim($data));
+			if(is_null(self::$_tag) === true){
+				self::$_tag = self::findElement(trim($data));
+			}
 			do{
-				$found = self::findTextElement($element_tag);
+				$found = self::findTextElement(self::$_tag);
 			}
 			while($found);
 		}

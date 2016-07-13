@@ -9,6 +9,7 @@ class http implements ihttp{
 	static $_url;
 	static $_ipage;
 	static $_pagenumber;
+	static $_pages_to_scrap;
 	
 	/**
 	 * Get the content of website
@@ -29,7 +30,7 @@ class http implements ihttp{
 				exit("Couldn't load the website $url.");
 			}	
 		}else{
-			exit("Website URL is not defined.");			
+			exit("Website URL is not defined.");
 		}
 
 		return $contenido;

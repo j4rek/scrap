@@ -44,6 +44,14 @@ interface iparser{
 	static function findChilds($element);
 
 	/**
+	 * scrap function.
+	 * 
+	 * @param 		Array $data  The elements you want to scrap
+	 * @return void
+	 */
+	static function scrap($data = array());
+	
+	/**
 	 * fill all the data process
 	 *
 	 * @param      array  $data    The information you are looking for inside the website
